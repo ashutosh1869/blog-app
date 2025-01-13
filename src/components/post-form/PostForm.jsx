@@ -53,19 +53,22 @@ export default function PostForm({ post }) {
         }
     };
 
-    const slugTransform = useCallback((value) => {
+    const slugTransform = useCallback(async (value) => {
         if (value && typeof value === "string") {
             let slug = value
                 .trim()
                 .toLowerCase()
                 .replace(/[^a-zA-Z\d\s]+/g, "-")
                 .replace(/\s/g, "-");
-            
-            if (counter !== '0') {
+
+            const allPosts = await appwriteService.getPosts();
+            const isDuplicate = allPosts.some((p) => p.slug === slug);
+
+            if (isDuplicate) {
                 slug += `-${counter}`;
+                setCounter((prevCounter) => (parseInt(prevCounter) + 1).toString());
             }
-            
-            setCounter((prevCounter) => (parseInt(prevCounter) + 1).toString());
+
             return slug;
         }
         return "";
