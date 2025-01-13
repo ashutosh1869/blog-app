@@ -53,26 +53,17 @@ export default function PostForm({ post }) {
         }
     };
 
-    const slugTransform = useCallback(async (value) => {
-        if (value && typeof value === "string") {
-            let slug = value
+    const slugTransform = useCallback((value) => {
+        if (value && typeof value === "string")
+            return value
                 .trim()
                 .toLowerCase()
                 .replace(/[^a-zA-Z\d\s]+/g, "-")
-                .replace(/\s/g, "-");
-
-            const allPosts = await appwriteService.getPosts();
-            const isDuplicate = allPosts.some((p) => p.slug === slug);
-
-            if (isDuplicate) {
-                slug += `-${counter}`;
-                setCounter((prevCounter) => (parseInt(prevCounter) + 1).toString());
-            }
-
-            return slug;
-        }
+                .replace(/\s/g, "-") + "-" + {counter};
+                setCounter(counter + 1);
+        
         return "";
-    }, [counter]);
+    }, []);
 
     React.useEffect(() => {
         const subscription = watch((value, { name }) => {
