@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export default function PostForm({ post }) {
+    const [counter, setCounter] = useState('0')
     const { register, handleSubmit, watch, setValue, control, getValues } = useForm({
         defaultValues: {
             title: post?.title || "",
@@ -53,15 +54,22 @@ export default function PostForm({ post }) {
     };
 
     const slugTransform = useCallback((value) => {
-        if (value && typeof value === "string")
-            return value
+        if (value && typeof value === "string") {
+            let slug = value
                 .trim()
                 .toLowerCase()
                 .replace(/[^a-zA-Z\d\s]+/g, "-")
-                .replace(/\s/g, "-") + "-" + Math.random().toString(36).substr(2, 9);
-
+                .replace(/\s/g, "-");
+            
+            if (counter !== '0') {
+                slug += `-${counter}`;
+            }
+            
+            setCounter((prevCounter) => (parseInt(prevCounter) + 1).toString());
+            return slug;
+        }
         return "";
-    }, []);
+    }, [counter]);
 
     React.useEffect(() => {
         const subscription = watch((value, { name }) => {
