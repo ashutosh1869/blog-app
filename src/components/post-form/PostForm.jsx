@@ -58,7 +58,7 @@ export default function PostForm({ post }) {
                 .trim()
                 .toLowerCase()
                 .replace(/[^a-zA-Z\d\s]+/g, "-")
-                .replace(/\s/g, "-");
+                .replace(/\s/g, "-") + "-" + Math.random().toString(36).substr(2, 9);
 
         return "";
     }, []);
