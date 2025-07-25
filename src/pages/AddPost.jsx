@@ -1,14 +1,43 @@
-import React from 'react'
-import { Container, PostForm } from '../components'
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Container, PostForm } from '../components';
+import authservice from '../appwrite/auth';
 
 function AddPost() {
-  return (
-    <div className='py-8'>
-        <Container>
-            <PostForm />
-        </Container>
-    </div>
-  )
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        async function checkAuth() {
+            try {
+                const user = await authservice.getCurrentUser();
+                setIsAuthenticated(!!user); // Set to true if user exists, false otherwise
+                if (!user) {
+                    navigate('/login');
+                }
+            } catch (error) {
+                setIsAuthenticated(false);
+                navigate('/login');
+            }
+        }
+        checkAuth();
+    }, [navigate]);
+
+    if (isAuthenticated === null) {
+        return <div>Loading...</div>; // Show loading state while checking auth
+    }
+
+    if (!isAuthenticated) {
+        return null; // Redirect handled in useEffect
+    }
+
+    return (
+        <div className='py-8'>
+            <Container>
+                <PostForm />
+            </Container>
+        </div>
+    );
 }
 
-export default AddPost
+export default AddPost;

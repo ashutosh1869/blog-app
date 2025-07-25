@@ -7,13 +7,13 @@ export default function AuthLayout({children,authentication=true}) {
     const navigate = useNavigate()
     const authStatus =useSelector(state=>state.auth.status)
     useEffect(()=>{
-        if(authentication && authStatus!==authentication){
+        if(authentication && authStatus!==true){
             navigate('/login')
-        }else if(!authentication && authStatus!==authentication){
+        }else if(!authentication && authStatus===true){
             navigate('/')
         }
         setLoading(false)
-    },[authStatus,useNavigate,authentication])
+    },[authStatus,authentication])
   return loading ? <div>Loading...</div> : <div>{children}</div>
 }
 
