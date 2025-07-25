@@ -11,7 +11,7 @@ function AddPost() {
         async function checkAuth() {
             try {
                 const user = await authservice.getCurrentUser();
-                setIsAuthenticated(!!user); // Set to true if user exists, false otherwise
+                setIsAuthenticated(!!user);
                 if (!user) {
                     navigate('/login');
                 }
@@ -24,12 +24,11 @@ function AddPost() {
     }, [navigate]);
 
     if (isAuthenticated === null) {
-        return <div>Loading...</div>; // Show loading state while checking auth
+        return <div>Loading...</div>; 
     }
 
     if (!isAuthenticated) {
-        return null; // Redirect handled in useEffect
-    }
+        return null; 
 
     return (
         <div className='py-8'>
