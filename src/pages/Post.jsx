@@ -3,65 +3,108 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import appwriteService from "../appwrite/config";
 import { Button, Container } from "../components";
 import parse from "html-react-parser";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import authservice from "../appwrite/auth";
+import { login as authLogin } from "../store/authSlice";
 
 export default function Post() {
     const [post, setPost] = useState(null);
     const { slug } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const userData = useSelector((state) => state.auth.userData);
-
-    const isAuthor = post && userData ? post.userId === userData.$id : false;
 
     useEffect(() => {
         if (slug) {
             appwriteService.getDocument(slug).then((post) => {
-                if (post) setPost(post);
-                else navigate("/");
+                if (post) {
+                    setPost(post);
+                } else {
+                    navigate("/");
+                }
+            }).catch(() => {
+                navigate("/");
             });
-        } else navigate("/");
+        } else {
+            navigate("/");
+        }
     }, [slug, navigate]);
 
-    const deletePost = () => {
-        appwriteService.deletePost(post.$id).then((status) => {
-            if (status) {
-                appwriteService.deleteFile(fileId); 
+    useEffect(() => {
+        if (!userData) {
+            authservice.getCurrentUser().then((user) => {
+                if (user) {
+                    dispatch(authLogin(user));
+                } else {
+                    navigate("/login");
+                }
+            }).catch(() => {
+                navigate("/login");
+            });
+        }
+    }, [userData, navigate, dispatch]);
+
+    const isAuthor = post && userData ? post.userId === userData.$id : false;
+
+    const editPost = () => {
+        navigate(`/edit-post/${post.$id}`);
+    };
+
+    const deletePost = async () => {
+        try {
+            const postDeleted = await appwriteService.deletePost(post.$id);
+            if (postDeleted) {
+                if (post.featuredImage) {
+                    await appwriteService.deleteFile(post.featuredImage);
+                }
                 navigate("/");
             }
-        });
+        } catch (error) {
+            // Handle error
+        }
     };
-    
 
     return post ? (
-        <div className="py-8">
+        <div className="py-10 bg-white min-h-screen">
             <Container>
-                <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
+                <div className="w-full flex justify-center mb-6 relative border border-gray-200 rounded-xl p-4 bg-white">
                     <img
                         src={appwriteService.getFilePreview(post.featuredImage)}
                         alt={post.title}
-                        className="rounded-xl"
+                        className="rounded-xl max-h-96 object-cover border border-gray-200"
                     />
 
                     {isAuthor && (
-                        <div className="absolute right-6 top-6">
+                        <div className="absolute right-8 top-8 flex gap-2">
                             <Link to={`/edit-post/${post.$id}`}>
-                                <Button bgColor="bg-green-500" className="mr-3" >
+                                <Button
+                                    bgColor="bg-black"
+                                    className="mr-2 text-white font-medium"
+                                    onClick={editPost}
+                                >
                                     Edit
                                 </Button>
                             </Link>
-                            <Button bgColor="bg-red-500" onClick={deletePost}>
+                            <Button
+                                bgColor="bg-black"
+                                className="text-white font-medium"
+                                onClick={deletePost}
+                            >
                                 Delete
                             </Button>
                         </div>
                     )}
                 </div>
-                <div className="w-full mb-6">
-                    <h1 className="text-2xl font-bold">{post.title}</h1>
-                </div>
-                <div className="browser-css">
-                    {parse(post.content)}
+                <div className="w-full mb-8 text-center">
+                    <h1 className="text-3xl font-bold text-black mb-2">{post.title}</h1>
+                    <div className="text-sm text-gray-700 italic">
+                        {post.createdAt && new Date(post.createdAt).toLocaleDateString()}
                     </div>
+                </div>
+                <div className="browser-css px-4 py-6 bg-white rounded-lg border border-gray-200 text-black">
+                    {parse(post.content)}
+                </div>
             </Container>
         </div>
     ) : null;

@@ -1,6 +1,5 @@
 import { useDispatch } from 'react-redux'
 import { useEffect, useState } from 'react'
-import React from 'react'
 import authservice from './appwrite/auth'
 import './App.css'
 import { login, logout } from './store/authSlice'
@@ -19,18 +18,15 @@ function App() {
         else dispatch(logout())
       })
       .finally(() => setLoading(false))
-
   }, [])
-  return !loading ? (
 
-    <div className='min-h-screen w-screen flex flex-wrap content-between justify-center bg-gray-400'>
-      <div className=' block'>
-        <Header />
-        <main>
+  return !loading ? (
+    <div className="min-h-screen w-screen flex flex-col bg-gray-400">
+      <Header />
+      <main className="flex-1 w-full mx-0 px-0">
         <Outlet />
-        </main>
-        <Footer />
-      </div>
+      </main>
+      <Footer />
     </div>
   ) : null
 }

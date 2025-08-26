@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, PostForm } from '../components';
 import authservice from '../appwrite/auth';
@@ -24,14 +24,15 @@ function AddPost() {
     }, [navigate]);
 
     if (isAuthenticated === null) {
-        return <div>Loading...</div>; 
+        return <div>Loading...</div>;
     }
 
     if (!isAuthenticated) {
-        return null; 
+        return null;
+    }
 
     return (
-        <div className='py-8'>
+        <div className='py-8 w-full bg-gradient-to-t from-blue-100 to-purple-100'>
             <Container>
                 <PostForm />
             </Container>
