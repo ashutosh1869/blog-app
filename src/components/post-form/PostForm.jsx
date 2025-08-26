@@ -64,11 +64,7 @@ export default function PostForm({ post }) {
     }, [post, localPost, slug, navigate, reset]);
 
     const submit = async (data) => {
-        if (!userData?.userData?.$id) {
-            alert("You must be logged in to create or update a post.");
-            navigate("/login");
-            return;
-        }
+        
 
         if (localPost) {
             const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
