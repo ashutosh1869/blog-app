@@ -69,11 +69,14 @@ export default function Post() {
         <div className="py-10 bg-white min-h-screen">
             <Container>
                 <div className="w-full flex justify-center mb-6 relative border border-gray-200 rounded-xl p-4 bg-white">
-                    <img
-                        src={appwriteService.getFilePreview(post.featuredImage)}
-                        alt={post.title}
-                        className="rounded-xl max-h-96 object-cover border border-gray-200"
-                    />
+                    {post.featuredImage && (
+                        <img
+                            src={appwriteService.getFilePreview(post.featuredImage)}
+                            alt={post.title}
+                            className="rounded-xl max-h-96 w-full object-cover border border-gray-200"
+                        />
+                    )}
+
 
                     {isAuthor && (
                         <div className="absolute right-8 top-8 flex gap-2">

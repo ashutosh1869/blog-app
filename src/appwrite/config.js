@@ -110,10 +110,12 @@ export class Service {
 
     try {
         // In latest Appwrite SDK, this already returns a URL string
-        return this.bucket.getFileView(
+        const result = this.bucket.getFileView(
             Conf.appwriteBucketId,
             fileId
         );
+        console.log("File preview URL:", result);
+        return result;
     } catch (error) {
         console.error("Error fetching file preview:", error);
         return "";
