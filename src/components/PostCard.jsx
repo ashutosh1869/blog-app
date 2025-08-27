@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import appwriteService from '../appwrite/config'
 
 function PostCard({post}) {
+  
   return (
     <Link to={`/post/${post.$id}`}>
         <div 
