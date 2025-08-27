@@ -14,10 +14,16 @@ export class Service {
 
     async createPost({ title, slug, content, featuredImage, status, userId }) {
         try {
+            const safeSlug = slug
+            .replace(/[^a-zA-Z0-9-_]/g, "")  // keep only a-z, A-Z, 0-9, hyphen, underscore
+            .slice(0, 20);                   // max 20 chars for safety
+
+        // ✅ Combine safe slug with unique ID (still under 36 chars)
+        const documentId = (safeSlug + "-" + ID.unique()).slice(0, 36);
             return await this.databases.createDocument(
                 Conf.appwriteDatabaseId,
                 Conf.appwriteCollectionId,
-                slug + "-" + ID.unique(),
+                documentId,
                 {
                     title,
                     content,
